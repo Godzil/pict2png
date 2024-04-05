@@ -2,13 +2,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include <sys/mman.h>
-#include <sys/fcntl.h>
-#include <sys/stat.h>
-
-#include <unistd.h>
-
 #include <arpa/inet.h>
+
+#include <log.h>
+#include <binfile.h>
 
 #include <lodepng.h>
 
@@ -43,6 +40,8 @@ typedef struct pict_header
 } pict_header;
 #pragma pack()
 
+typedef void (*opcode_func)();
+
 #ifdef __LITTLE_ENDIAN__
 void window_rect_to_host(Rect *rect)
 {
@@ -62,28 +61,6 @@ void window_rect_to_host(Rect *rect) {}
 void header_to_host(pict_header *data) {}
 #endif
 
-void *load_file(char *filename)
-{
-    int fd;
-    void *RetPtr;
-    struct stat FileStat;
-
-    fd = open(filename, O_RDONLY);
-
-    fstat(fd, &FileStat);
-
-    RetPtr = mmap(NULL, FileStat.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-
-    close(fd);
-
-    if (RetPtr == MAP_FAILED)
-    {
-        RetPtr = NULL;
-    }
-
-    return RetPtr;
-}
-
 void help()
 {
     printf("pict2png -i input -o output\n");
@@ -95,7 +72,7 @@ int main(int argc, char *argv[])
     char *input_file = NULL;
     char *output_file = NULL;
 
-    int8_t *fileContent;
+    binfile_t *fileContent;
     pict_header *header;
     for (param_i = 1 ; (param_i < argc) && (argv[param_i][0] == '-') ; param_i++)
     {
@@ -115,14 +92,24 @@ no_more_params:
         exit(-1);
     }
 
-    fileContent = load_file(input_file);
+    printf("%d --- %d\n", DEFAULT_DEBUG_LEVEL, MAXIMUM_DEBUG_LEVEL);
+
+    Log(TLOG_DEBUG, "params", "Input file: %s", input_file);
+    Log(TLOG_DEBUG, "params", "Output file: %s", output_file);
+
+    fileContent = file_open(input_file);
     header = (pict_header *)fileContent;
 
     header_to_host(header);
 
-    printf("File size: %d\n", header->size);
+    Log(TLOG_VERBOSE, "header", "File size: %d", header->size);
+    Log(TLOG_VERBOSE, "header", "      top: %d", header->picFrame.sides.top);
+    Log(TLOG_VERBOSE, "header", "     left: %d", header->picFrame.sides.left);
+    Log(TLOG_VERBOSE, "header", "   bottom: %d", header->picFrame.sides.bottom);
+    Log(TLOG_VERBOSE, "header", "    right: %d", header->picFrame.sides.right);
 
 
+    file_close(&fileContent);
 
     return 0;
 }

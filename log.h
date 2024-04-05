@@ -39,11 +39,15 @@ enum
 
 #endif /* MAXIMUM_DEBUG_LEVEL */
 
+#ifndef DEFAULT_DEBUG_LEVEL
+
 /* Set the default log level */
 #ifndef SET_DEBUG_LOG
 #define DEFAULT_DEBUG_LEVEL TLOG_PANIC
 #else
 #define DEFAULT_DEBUG_LEVEL TLOG_NORMAL
+#endif
+
 #endif
 
 /******************************************************************************/
