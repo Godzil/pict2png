@@ -6,56 +6,15 @@
 
 #include <log.h>
 #include <binfile.h>
-
-#include <lodepng.h>
+#include <quickimagedraw.h>
 
 #pragma pack(1)
-typedef struct Point
-{
-    int16_t x;
-    int16_t y;
-} Point;
-
-typedef union Rect
-{
-    struct
-    {
-        int16_t top;
-        int16_t left;
-        int16_t bottom;
-        int16_t right;
-    } sides;
-    struct
-    {
-        Point topLeft;
-        Point botRight;
-    } corners;
-} Rect;
-
-typedef struct Region
-{
-    int16_t regionSize;
-    Rect rect;
-    int8_t more[];
-} Region;
-
-typedef struct Bitmap
-{
-    int16_t rowByte;
-    Rect bounds;
-    Rect srcRect;
-    Rect dstRect;
-    int16_t mode;
-    int8_t data[];
-} Bitmap;
-
 typedef struct pict_header
 {
     int16_t size;
     Rect picFrame;
     int8_t imageData[];
 } pict_header;
-
 #pragma pack()
 
 void rect_to_host(Rect *rect)
@@ -127,8 +86,8 @@ void UnpackBits(int8_t **srcPtr, int8_t **dstPtr, uint16_t outSize)
     *srcPtr = sPtr;
 }
 
-typedef void (*opcode_func)(binfile_t *binfile);
-#define OPCODE(s) static inline void opcode_##s (binfile_t *binfile)
+typedef void (*opcode_func)(binfile_t *binfile, image_t *image);
+#define OPCODE(s) static inline void opcode_##s (binfile_t *binfile, image_t *image)
 
 OPCODE(nop)
 {
@@ -229,14 +188,14 @@ void help()
     printf("pict2png -i input -o output\n");
 }
 
-void run_opcodes(binfile_t *binfile)
+void run_opcodes(binfile_t *binfile, image_t *image)
 {
     uint8_t opcode = *binfile->read(binfile, 1);
     while(opcode != 0xFF)
     {
         if (opcodes[opcode])
         {
-            opcodes[opcode](binfile);
+            opcodes[opcode](binfile, image);
         }
         else
         {
@@ -251,6 +210,7 @@ int main(int argc, char *argv[])
     int param_i;
     char *input_file = NULL;
     char *output_file = NULL;
+    image_t *outImage;
 
     binfile_t *fileContent;
     pict_header *header;
@@ -287,7 +247,7 @@ no_more_params:
     }
     else
     {
-        Log(TLOG_ERROR,"loading", "Either this file is not a PICT file, or it is a PICT v2 file which are not supported");
+        Log(TLOG_ERROR,"loading", "Either this file is not a PICT file, or it is a PICT v2 file which is not supported");
         return -1;
     }
 
@@ -302,10 +262,13 @@ no_more_params:
     Log(TLOG_VERBOSE, "header", "    right: %d", header->picFrame.sides.right);
 
     // Create image
+    outImage = image_create(header->picFrame);
 
-    run_opcodes(fileContent);
+    run_opcodes(fileContent, outImage);
 
     // Save image to png
+    image_save(outImage, output_file);
+    image_drestoy(&outImage);
     file_close(&fileContent);
 
     return 0;

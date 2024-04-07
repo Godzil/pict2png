@@ -12,6 +12,6 @@ target_compile_options(pict2png PRIVATE -DMAXIMUM_DEBUG_LEVEL=TLOG_${MAX_LOG_LEV
 target_compile_options(pict2png PRIVATE -DDEFAULT_DEBUG_LEVEL=TLOG_${LOG_LEVEL})
 
 
-target_sources(pict2png PRIVATE main.c log.c log.h binfile.c binfile.h)
+target_sources(pict2png PRIVATE main.c log.c log.h binfile.c binfile.h quickimagedraw.c quickimagedraw.h)
 target_include_directories(pict2png PRIVATE .)
 target_link_libraries(pict2png PRIVATE lodepng)
