@@ -1,5 +1,5 @@
 /**
- *  BinFile - Binary file access ablstrations
+ *  BinFile - Binary file access abstrations
  *  binfile.h
  *
  *  Created by Manoël Trapier on 05/04/2024

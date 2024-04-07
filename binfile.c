@@ -1,5 +1,5 @@
 /**
- *  BinFile - Binary file access ablstrations
+ *  BinFile - Binary file access abstrations
  *  binfile.c
  *
  *  Created by Manoël Trapier on 05/04/2024
@@ -16,7 +16,6 @@
 #include <sys/stat.h>
 
 #include <unistd.h>
-
 
 #include <log.h>
 #include <binfile.h>
