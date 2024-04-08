@@ -84,6 +84,7 @@ void UnpackBits(int8_t **srcPtr, int8_t **dstPtr, uint16_t outSize)
     }
     *dstPtr = dPtr;
     *srcPtr = sPtr;
+    Log(TLOG_DEBUG, "UnpackBits", "Asked %d, unpacked %d", outSize, byteDone);
 }
 
 typedef void (*opcode_func)(binfile_t *binfile, image_t *image);
