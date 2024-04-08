@@ -12,7 +12,7 @@
 #include <log.h>
 #include <quickimagedraw.h>
 
-static uint32_t get_bitmap_pixel(uint8_t *bitmap, Rect bounds, int x, int y)
+static uint32_t get_bitmap_pixel(int8_t *bitmap, Rect bounds, int x, int y)
 {
     int stride = bounds.sides.right - bounds.sides.left;
     int bitOffset = 7 - (x % 8);
