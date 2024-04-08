@@ -41,6 +41,7 @@ on numerous PICT file I have, I don't have existing at hand, so I may have overl
 If you get any error messages about "Unknown opcode" please report that in a ticket, I'll try to add support to these opcode
 as soon as possible, if you are a programmer your contribution is also welcome if you want to give it a try.
 
+Also please include as much information as possible when creating a ticket, which would include logs, and input files if possible.
 
 ### TODO
 
