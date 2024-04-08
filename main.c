@@ -243,6 +243,13 @@ no_more_params:
     Log(TLOG_DEBUG, "params", "Output file: %s", output_file);
 
     fileContent = file_open(input_file);
+
+    if (!fileContent)
+    {
+        Log(TLOG_ERROR, "pict2png", "File '%s' not found. Aborting", input_file);
+        return -1;
+    }
+
     if ( (fileContent->data[0xA] == 0x11) && (fileContent->data[0xB] == 0x01) )
     {
         Log(TLOG_DEBUG, "loading", "Headerless file", input_file);
