@@ -51,16 +51,35 @@ typedef struct Bitmap
 } Bitmap;
 #pragma pack()
 
+typedef enum drawMode
+{
+    srcCopy = 0,    /* Overwrite */
+    srcOr,          /* Or        */
+    srcXor,         /* Xor       */
+    srcBic,         /* Bit Clear */
+    notSrcCopy,
+    notSrcOr,
+    notSrtXor,
+    notSrcBic,
+} drawMode;
+
+
 typedef struct image_t
 {
-    
+    Rect frame;
+    uint32_t *image;
+
+    Region clip;
 } image_t;
 
+int getRectWidth(Rect r);
+int getRectHeight(Rect r);
+
 image_t *image_create(Rect picFrame);
-void image_drestoy(image_t **image);
+void image_destroy(image_t **image);
 void image_save(image_t *image, char *filepath);
 
-void image_setclipregion(image_t *image, Region clipRegion);
-void image_blitbit(image_t *image, int8_t bitmap, int mode, Rect bounds, Rect srcBound, Rect dstBound);
+void image_setclipregion(image_t *image, Region *clipRegion);
+void image_blitbit(image_t *image, int8_t *bitmap, int mode, Rect *bounds, Rect *srcBound, Rect *dstBound);
 
 #endif /* IMAGELIB_H */
