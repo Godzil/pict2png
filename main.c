@@ -174,10 +174,6 @@ OPCODE(packbitsrect)
     image_blitbit(image, bmp, bitmap->mode, &bitmap->bounds,
                   &bitmap->srcRect, &bitmap->dstRect);
 
-    FILE *fp;
-    fp = fopen("test.out", "wb");
-    fwrite(bmp, 1, width * height, fp);
-    fclose(fp);
     free(bmp);
 }
 
