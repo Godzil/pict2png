@@ -120,6 +120,7 @@ OPCODE(clipregion)
     Log(TLOG_VERBOSE, "cliprgn", "  left: %d", region->rect.sides.left);
     Log(TLOG_VERBOSE, "cliprgn", "bottom: %d", region->rect.sides.bottom);
     Log(TLOG_VERBOSE, "cliprgn", " right: %d", region->rect.sides.right);
+    image_setclipregion(image, region);
 }
 // 184 * 216
 OPCODE(packbitsrect)
@@ -150,7 +151,7 @@ OPCODE(packbitsrect)
     width = bitmap->bounds.sides.right - bitmap->bounds.sides.left;
     height = bitmap->bounds.sides.bottom - bitmap->bounds.sides.top;
 
-    bmp = calloc(sizeof(uint8_t), width * height);
+    bmp = calloc(sizeof(uint8_t), width * height / 8);
 
     Log(TLOG_VERBOSE, "packbits", " size: %dx%d", width, height);
 
@@ -164,11 +165,14 @@ OPCODE(packbitsrect)
         UnpackBits(&src, &dest, bitmap->rowByte);
     }
 
+    image_blitbit(image, bmp, bitmap->mode, &bitmap->bounds,
+                  &bitmap->srcRect, &bitmap->dstRect);
 
     FILE *fp;
     fp = fopen("test.out", "wb");
     fwrite(bmp, 1, width * height, fp);
     fclose(fp);
+    free(bmp);
 }
 
 opcode_func opcodes[255] =
@@ -261,14 +265,12 @@ no_more_params:
     Log(TLOG_VERBOSE, "header", "   bottom: %d", header->picFrame.sides.bottom);
     Log(TLOG_VERBOSE, "header", "    right: %d", header->picFrame.sides.right);
 
-    // Create image
     outImage = image_create(header->picFrame);
 
     run_opcodes(fileContent, outImage);
 
-    // Save image to png
     image_save(outImage, output_file);
-    image_drestoy(&outImage);
+    image_destroy(&outImage);
     file_close(&fileContent);
 
     return 0;
