@@ -221,6 +221,9 @@ int main(int argc, char *argv[])
 
     binfile_t *fileContent;
     pict_header *header;
+
+    Log(TLOG_ALWAYS, "", "pict2png %s",  APP_VERSION);
+
     for (param_i = 1 ; (param_i < argc) && (argv[param_i][0] == '-') ; param_i++)
     {
         switch (argv[param_i][1])
