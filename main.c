@@ -148,8 +148,14 @@ OPCODE(packbitsrect)
     Log(TLOG_VERBOSE, "packbits", "dstRct.r: %d", bitmap->dstRect.sides.right);
     Log(TLOG_VERBOSE, "packbits", "    mode: %d", bitmap->mode);
 
-    width = bitmap->bounds.sides.right - bitmap->bounds.sides.left;
-    height = bitmap->bounds.sides.bottom - bitmap->bounds.sides.top;
+    width = getRectWidth(bitmap->bounds);
+    if (bitmap->rowByte * 8 > width)
+    {
+        /* width is too small, just update it */
+        width = bitmap->rowByte * 8;
+        bitmap->bounds.sides.right = bitmap->bounds.sides.left + width;
+    }
+    height = getRectHeight(bitmap->bounds);
 
     bmp = calloc(sizeof(uint8_t), width * height / 8);
 
